@@ -1,0 +1,172 @@
+/* ===== EMSTRAP base styles ===== */
+
+html {
+    scrollbar-width: thin;
+    scrollbar-color: #1c2942 transparent;
+    scroll-behavior: auto; /* JS handles the eased smooth-scroll */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #050B14;
+    color: #f3f4f6;
+    overflow-x: hidden;
+}
+
+.font-display {
+    font-family: 'Sora', sans-serif;
+}
+
+/* ===== Glass panel ===== */
+.glass-panel {
+    background: rgba(10, 16, 30, 0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel-hover:hover {
+    border-color: rgba(0, 82, 255, 0.25);
+    box-shadow: 0 0 35px rgba(0, 82, 255, 0.12);
+    transform: translateY(-4px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Ambient glowing blobs ===== */
+.glowing-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 0;
+    animation: floatBlob 25s infinite alternate ease-in-out;
+}
+
+.blob-blue {
+    background: radial-gradient(circle, #0052FF 0%, transparent 80%);
+    width: 50vw;
+    height: 50vw;
+    top: -10%;
+    left: -10%;
+}
+
+.blob-red {
+    background: radial-gradient(circle, #FF2A43 0%, transparent 80%);
+    width: 45vw;
+    height: 45vw;
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -5s;
+}
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(6vw, -6vh) scale(1.1); }
+    100% { transform: translate(-3vw, 10vh) scale(0.9); }
+}
+
+/* ===== Hero section ===== */
+.hero-viewport {
+    position: relative;
+    width: 100%;
+    min-height: 68vh;
+    overflow: hidden;
+    background: #050B14;
+}
+
+.hero-bg-video {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.hero-tint {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        linear-gradient(90deg, #050B14 0%, rgba(5, 11, 20, 0.92) 28%, rgba(5, 11, 20, 0.55) 52%, rgba(5, 11, 20, 0.15) 75%, rgba(5, 11, 20, 0) 100%),
+        linear-gradient(0deg, #050B14 0%, rgba(5, 11, 20, 0.9) 10%, rgba(5, 11, 20, 0) 45%);
+}
+
+/* =====================================================================
+   Staggered scroll-reveal cards
+   NOTE: the authoritative timing lives in the <style> block in
+   index.html (it loads after this stylesheet and wins the cascade).
+   Kept in sync here — slowed from 0.85s/1.2s to 1.9s and the overshoot
+   softened so the reveal reads as a gentle rise instead of a "pop".
+   ===================================================================== */
+.wave-card-node {
+    opacity: 0;
+    transform: translateY(70px) rotateX(-10deg);
+    will-change: transform, opacity;
+}
+
+.wave-card-node.wave-animate {
+    animation: cardWaveRipple 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes cardWaveRipple {
+    0% {
+        opacity: 0;
+        transform: translateY(80px) scale(0.94) rotateX(-12deg) rotateY(-3deg);
+    }
+    55% {
+        opacity: 0.85;
+        transform: translateY(-6px) scale(1.008) rotateX(2deg) rotateY(1deg);
+    }
+    78% {
+        transform: translateY(2px) scale(0.998) rotateX(-1deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotateX(0) rotateY(0);
+    }
+}
+
+/* ===== Success modal ===== */
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* =====================================================================
+   Anchor offset so headings never sit under the fixed header.
+   Fixed header is ~96-104px tall (logo + padding), so every section
+   including the hero now reserves clearance above it.
+   ===================================================================== */
+#page-landing,
+#page-home,
+#page-about,
+#page-solutions,
+#page-products,
+#page-demo,
+#page-contact {
+    scroll-margin-top: 110px;
+}
+
+/* ===== Nav active underline ===== */
+.nav-link {
+    position: relative;
+    color: #9CA3AF;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #0052FF !important;
+}
+
+.nav-link.active {
+    color: #0052FF !important;
+}

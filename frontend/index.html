@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EMSTRAP | Emergency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+        tailwind.config = {
+        
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+    sans: ['Inter', 'sans-serif'],
+    display: ['Sora', 'sans-serif'],
+},
+                    colors: {
+                        brandDark: '#050B14',
+                        brandSurface: 'rgba(5, 11, 20, 0.75)',
+                        brandBlue: '#0052FF',
+                        emergencyRed: '#FF2A43',
+                        warmAmber: '#F59E0B',
+                        brandAccent: '#10B981',
+                    },
+                    boxShadow: {
+                        'glow-blue': '0 0 25px rgba(0, 82, 255, 0.35)',
+                        'glow-red': '0 0 25px rgba(255, 42, 67, 0.35)',
+                        'glow-amber': '0 0 25px rgba(245, 158, 11, 0.25)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ===== EMSTRAP base styles ===== */
+
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: #1c2942 transparent;
+            scroll-behavior: auto; /* JS handles the eased smooth-scroll */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050B14;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* ===== Glass panel ===== */
+        .glass-panel {
+            background: rgba(10, 16, 30, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-panel-hover:hover {
+            border-color: rgba(0, 82, 255, 0.25);
+            box-shadow: 0 0 35px rgba(0, 82, 255, 0.12);
+            transform: translateY(-4px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== Header (no seam on scroll) ===== */
+        #mainHeader {
+            transition: background 0.3s ease, backdrop-filter 0.3s ease, padding 0.3s ease;
+        }
+
+        /* ===== Hero section ===== */
+        .hero-viewport {
+            position: relative;
+            width: 100%;
+            min-height: 68vh;
+            overflow: hidden;
+            background: #050B14;
+        }
+
+        .hero-bg-video {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .hero-tint {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            /* Lightened so the background video reads clearly through the tint.
+               Left-side gradient kept just strong enough for heading legibility. */
+            background:
+                linear-gradient(90deg, #050B14 0%, rgba(5, 11, 20, 0.75) 20%, rgba(5, 11, 20, 0.35) 45%, rgba(5, 11, 20, 0.05) 70%, rgba(5, 11, 20, 0) 100%),
+                linear-gradient(0deg, #050B14 0%, rgba(5, 11, 20, 0.9) 10%, rgba(5, 11, 20, 0) 45%);
+        }
+
+        /* =====================================================================
+           Staggered scroll-reveal cards
+           ===================================================================== */
+        .wave-card-node {
+            opacity: 0;
+            transform: translateY(70px) rotateX(-10deg);
+            will-change: transform, opacity;
+        }
+
+        .wave-card-node.wave-animate {
+            animation: cardWaveRipple 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes cardWaveRipple {
+            0% {
+                opacity: 0;
+                transform: translateY(80px) scale(0.94) rotateX(-12deg) rotateY(-3deg);
+            }
+            55% {
+                opacity: 0.85;
+                transform: translateY(-6px) scale(1.008) rotateX(2deg) rotateY(1deg);
+            }
+            78% {
+                transform: translateY(2px) scale(0.998) rotateX(-1deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0) rotateY(0);
+            }
+        }
+
+        /* ===== Success modal ===== */
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* =====================================================================
+           Anchor offset so headings never sit under the fixed header.
+           ===================================================================== */
+        #page-landing,
+        #page-home,
+        #page-about,
+        #page-solutions,
+        #page-products,
+        #page-demo,
+        #page-contact {
+            scroll-margin-top: 110px;
+        }
+
+        /* ===== Nav active underline ===== */
+        .nav-link {
+            position: relative;
+            color: #9CA3AF;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover,
+        .nav-link.active {
+            color: #0052FF !important;
+        }
+    </style>
+</head>
+<body class="selection:bg-brandBlue selection:text-white bg-brandDark text-slate-300">
+
+
+    <!-- Persistent Header Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent py-5 bg-gradient-to-b from-brandDark/80 via-brandDark/30 to-transparent" id="mainHeader">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+            <a class="flex items-center space-x-3 group" href="#page-landing">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-white p-1 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 cursor-zoom-in border border-white/20 shadow-lg"
+     onclick="openLogoLightbox(event)">
+    <img src="logo.png"
+         alt="EMSTRAP Logo"
+         class="w-full h-full object-cover rounded-full" />
+</div>                <div class="flex flex-col">
+                    <span class="text-2xl font-black font-display tracking-wider bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">EMSTRAP</span>
+                    <span class="text-[9px] font-bold tracking-widest text-red-400 uppercase">Emergency</span>
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center space-x-10">
+    <a class="nav-link text-sm font-semibold transition-colors duration-200 active" href="#page-landing" id="nav-home">Home</a>
+
+    <a class="nav-link text-sm font-semibold transition-colors duration-200" href="#page-about" id="nav-about">About</a>
+
+    <a class="nav-link text-sm font-semibold transition-colors duration-200" href="#page-solutions" id="nav-solutions">Solutions</a>
+
+    <a class="nav-link text-sm font-semibold transition-colors duration-200" href="#page-products" id="nav-products">Products</a>
+
+    <a class="nav-link text-sm font-semibold transition-colors duration-200" href="#page-contact" id="nav-contact">Contact</a>
+</nav>
+            <div class="flex items-center space-x-4">
+                <a
+  class="relative px-6 py-2.5 rounded-full font-bold text-sm tracking-wide text-white bg-emergencyRed border-2 border-emergencyRed hover:bg-red-700 hover:border-red-700 hover:shadow-glow-red transition-all duration-300 overflow-hidden group block text-center"
+  href="#"
+  onclick="openSimulation(); return false;"
+>
+    <span class="relative flex items-center justify-center space-x-2">
+        <span>Request Demo</span>
+    </span>
+</a>
+                <button class="md:hidden text-white hover:text-brandBlue transition-colors p-2 text-sm font-bold tracking-wider focus:outline-none" id="mobileMenuBtn">
+                    MENU
+                </button>
+            </div>
+        </div>
+        <div class="hidden absolute top-full left-0 right-0 glass-panel  flex-col py-6 px-8 space-y-4" id="mobileMenu">
+<a class="text-lg font-bold text-gray-300 py-2 border-b border-white/5 block" href="#page-landing" onclick="toggleMobileMenu();">Home</a>            <a class="text-lg font-bold text-gray-300 py-2 border-b border-white/5 block" href="#page-products" onclick="toggleMobileMenu();">Products</a>
+            <a class="text-lg font-bold text-gray-300 py-2 border-b border-white/5 block" href="#page-solutions" onclick="toggleMobileMenu();">Solutions</a>
+            <a class="text-lg font-bold text-gray-300 py-2 border-b border-white/5 block" href="#page-about" onclick="toggleMobileMenu();">About</a>
+            <a class="text-lg font-bold text-gray-300 py-2 border-b border-white/5 block" href="#" onclick="toggleMobileMenu(); openSimulation(); return false;">Demo</a>
+            <a class="text-lg font-bold text-gray-300 py-2 border-b border-white/5 block" href="#page-contact" onclick="toggleMobileMenu();">Contact</a>
+        </div>
+    </header>
+
+    <main class="relative z-10 min-h-screen">
+        <!-- 1. Landing View / Introductory Anchor -->
+        <div class="hero-viewport relative flex items-center overflow-hidden" id="page-landing">
+            <video class="hero-bg-video" autoplay="" muted="" loop="" playsinline="" aria-hidden="true">
+                <source src="hero-bg.mp4" type="video/mp4"/>
+            </video>
+            <div class="hero-tint"></div>
+            <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full pt-32 md:pt-40 pb-20 md:pb-28">
+                <div class="max-w-2xl">
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black font-display tracking-tight leading-[1.05] mb-6 text-white">
+                        When Every Second Matters,<br/>
+                        Every <span class="text-emergencyRed">Response</span> Counts
+                    </h1>
+                    <p class="text-base md:text-lg text-slate-300 max-w-xl mb-10 leading-relaxed">
+                        EMSTRAP is an Emergency Medical Smart Transport &amp; Response Platform connecting people, ambulances, hospitals, enterprises, and emergency responders through one intelligent ecosystem — with real-time telemetry, live infrastructure mapping, and smart dispatch management.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-start gap-4">
+                        <a class="px-8 py-4 rounded-full bg-emergencyRed hover:bg-red-600 text-white font-bold tracking-wide text-center shadow-glow-red hover:scale-105 transition-all duration-300 flex items-center gap-2 font-display" href="#" onclick="openSimulation(); return false;">
+                            <span>Request Demo</span>
+                            <i class="fa-solid fa-arrow-right text-sm"></i>
+                        </a>
+                        <a class="px-8 py-4 rounded-full bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-bold tracking-wide text-center transition-all duration-300 font-display" href="#page-contact">
+                            Become a Partner
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+            <!-- INITIALIZED ACTIVE METRICS COUNTER FRAMEWORK -->
+           
+        
+
+        <!-- 3. Expanded About Section Block -->
+        <div class="w-full pt-12 pb-8 px-6 md:px-12 max-w-7xl mx-auto" id="page-about">
+            <section class="text-center max-w-4xl mx-auto mb-10">
+                <span class="text-xs font-bold uppercase text-brandBlue tracking-wider font-display">About EMSTRAP</span>
+                <h1 class="text-4xl md:text-7xl font-black font-display tracking-tight text-white mt-3 mb-6">Building the Future of Emergency Response</h1>
+                <p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed max-w-3xl mx-auto">
+                    EMSTRAP is a healthcare technology company redefining emergency response through intelligent coordination, real-time communication, and smart digital infrastructure.
+                </p>
+            </section>
+
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 py-8 border-b border-white/5">
+                <div class="glass-panel p-8 rounded-2xl border border-white/5 wave-card-node">
+                    <h3 class="text-xl font-bold font-display text-white mb-4">Our Mission</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Our mission is simple: reduce delays, improve coordination, and help save lives through technology. We connect individuals, hospitals, ambulance providers, enterprises, and emergency operators into one unified ecosystem—enabling faster response, smarter decisions, and better outcomes when every second matters.
+                    </p>
+                </div>
+                <div class="glass-panel p-8 rounded-2xl border border-white/5 wave-card-node">
+                    <h3 class="text-xl font-bold font-display text-white mb-4">What is EMSTRAP?</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        EMSTRAP makes emergency care faster. We use real‑time telemetry data and direct routing loops to connect responders instantly. Smart resource allocation significantly cuts down processing chaos, keeping corporate administrative setups and trauma clinics perfectly aligned for seamless, live patient transfers.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Points We Resolve Section Component -->
+            <section class="py-10 border-b border-white/5" id="page-solutions">
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <span class="text-xs font-bold uppercase text-emergencyRed tracking-wider font-display">The challenges we solve</span>
+                    <h2 class="text-3xl md:text-5xl font-black font-display mt-3 text-white">The Points We Resolve</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass-panel p-8 rounded-2xl border border-white/5 hover:border-emergencyRed/40 transition-all duration-300 wave-card-node">
+                        <h3 class="text-xl font-bold font-display mb-3 text-white">Anxious Ambulance Delays</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">Waiting in terrifying silence without knowing where your help is, or when it will arrive.</p>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl border border-white/5 hover:border-emergencyRed/40 transition-all duration-300 wave-card-node">
+                        <h3 class="text-xl font-bold font-display mb-3 text-white">Unprepared Hospital ERs</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">Doctors operating blindly, forced to scramble for critical patient context upon arrival.</p>
+                    </div>
+                    <div class="glass-panel p-8 rounded-2xl border border-white/5 hover:border-emergencyRed/40 transition-all duration-300 wave-card-node">
+                        <h3 class="text-xl font-bold font-display mb-3 text-white">The Chaos of Manual Search</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">Desperately calling multiple numbers to find specialized life support units in an active panic.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Connection Sequence Process Flow Module Component -->
+            <section class="py-16 border-b border-white/5">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black font-display text-white mb-4">How It Works</h2>
+                    <p class="text-base md:text-lg text-slate-400 font-medium">A seamless flow from crisis to care.</p>
+                </div>
+                
+                <div class="max-w-7xl mx-auto px-6 relative">
+                    <!-- Connecting Horizontal Line (visible on lg screens) -->
+                    <div class="hidden lg:block absolute top-[40px] left-[8%] right-[8%] h-[2px] bg-brandBlue/20 z-0"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-8 text-center relative z-10">
+                        
+                        <!-- Step 1 -->
+                        <div class="wave-card-node flex flex-col items-center group">
+                            <div class="w-20 h-20 rounded-2xl bg-[#050B14] border-2 border-brandBlue shadow-[0_0_15px_rgba(0,82,255,0.2)] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
+                                <i class="fa-solid fa-shield-halved text-2xl text-brandBlue"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-brandBlue uppercase tracking-widest mb-1">STEP 1</span>
+                            <h4 class="text-base font-bold text-white mb-2 font-display">Press Alert</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed px-2">User presses emergency alert button</p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="wave-card-node flex flex-col items-center group" style="animation-delay: 0.1s">
+                            <div class="w-20 h-20 rounded-2xl bg-[#050B14] border-2 border-brandBlue shadow-[0_0_15px_rgba(0,82,255,0.2)] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
+                                <i class="fa-solid fa-camera text-2xl text-brandBlue"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-brandBlue uppercase tracking-widest mb-1">STEP 2</span>
+                            <h4 class="text-base font-bold text-white mb-2 font-display">Capture Scene</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed px-2">Camera captures the emergency situation</p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="wave-card-node flex flex-col items-center group" style="animation-delay: 0.2s">
+                            <div class="w-20 h-20 rounded-2xl bg-[#050B14] border-2 border-brandBlue shadow-[0_0_15px_rgba(0,82,255,0.2)] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
+                                <i class="fa-solid fa-truck-medical text-2xl text-brandBlue"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-brandBlue uppercase tracking-widest mb-1">STEP 3</span>
+                            <h4 class="text-base font-bold text-white mb-2 font-display">Notify</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed px-2">Alert is sent to nearby hospitals and responders</p>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="wave-card-node flex flex-col items-center group" style="animation-delay: 0.3s">
+                            <div class="w-20 h-20 rounded-2xl bg-[#050B14] border-2 border-brandBlue shadow-[0_0_15px_rgba(0,82,255,0.2)] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
+                                <i class="fa-solid fa-circle-check text-2xl text-brandBlue"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-brandBlue uppercase tracking-widest mb-1">STEP 4</span>
+                            <h4 class="text-base font-bold text-white mb-2 font-display">Acceptance</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed px-2">Ambulance accepts the request</p>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="wave-card-node flex flex-col items-center group" style="animation-delay: 0.4s">
+                            <div class="w-20 h-20 rounded-2xl bg-[#050B14] border-2 border-brandBlue shadow-[0_0_15px_rgba(0,82,255,0.2)] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
+                                <i class="fa-solid fa-location-dot text-2xl text-brandBlue"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-brandBlue uppercase tracking-widest mb-1">STEP 5</span>
+                            <h4 class="text-base font-bold text-white mb-2 font-display">Live Tracking</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed px-2">Live ambulance tracking begins</p>
+                        </div>
+
+                        <!-- Step 6 -->
+                        <div class="wave-card-node flex flex-col items-center group" style="animation-delay: 0.5s">
+                            <div class="w-20 h-20 rounded-2xl bg-[#050B14] border-2 border-brandBlue shadow-[0_0_15px_rgba(0,82,255,0.2)] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
+                                <i class="fa-solid fa-hospital text-2xl text-brandBlue"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-brandBlue uppercase tracking-widest mb-1">STEP 6</span>
+                            <h4 class="text-base font-bold text-white mb-2 font-display">Transport</h4>
+                            <p class="text-xs text-slate-400 leading-relaxed px-2">Patient transported safely to hospital</p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product Matrices Core Structural Ecosystem Layout -->
+            <section class="py-10 border-b border-white/5" id="page-products">
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <span class="text-xs font-bold uppercase text-brandBlue tracking-wider font-display">Our Product Ecosystem</span>
+                    <h2 class="text-3xl md:text-5xl font-black font-display mt-2 text-white">One Ecosystem. Every Emergency.</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-panel p-8 rounded-2xl border border-white/5 hover:border-emergencyRed/30 transition-all duration-300 wave-card-node flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold font-display mb-1 bg-gradient-to-r from-emergencyRed to-rose-400 bg-clip-text text-transparent">EMSTRAP Connect</h3>
+                            <span class="text-sm font-semibold font-display mb-3 block text-slate-300">Core Emergency Platform</span>
+                            <p class="text-sm text-slate-400 leading-relaxed mb-6">Rapid incident reporting and instant responder activation with AI-powered coordination.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-4 grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-300 font-mono">
+                            <span class="flex items-center gap-1.5">One-tap SOS</span>
+                            <span class="flex items-center gap-1.5">Smart dispatch</span>
+                            <span class="flex items-center gap-1.5">Live tracking</span>
+                            <span class="flex items-center gap-1.5">Hospital alerts</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-8 rounded-2xl border border-white/5 hover:border-brandAccent/30 transition-all duration-300 wave-card-node flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold font-display mb-1 bg-gradient-to-r from-brandAccent to-emerald-400 bg-clip-text text-transparent">EMSTRAP Shield</h3>
+                            <span class="text-sm font-semibold font-display mb-3 block text-slate-300">Enterprise Safety Platform</span>
+                            <p class="text-sm text-slate-400 leading-relaxed mb-6">A workplace safety solution built for organizations to improve employee protection protocols.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-4 grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-300 font-mono">
+                            <span class="flex items-center gap-1.5">Employee SOS</span>
+                            <span class="flex items-center gap-1.5">Incident reporting</span>
+                            <span class="flex items-center gap-1.5">Safety analytics</span>
+                            <span class="flex items-center gap-1.5">Enterprise coverage</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-8 rounded-2xl border border-white/5 hover:border-brandBlue/30 transition-all duration-300 wave-card-node flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold font-display mb-1 bg-gradient-to-r from-brandBlue to-blue-400 bg-clip-text text-transparent">EMSTRAP Command</h3>
+                            <span class="text-sm font-semibold font-display mb-3 block text-slate-300">Fleet Operations Center</span>
+                            <p class="text-sm text-slate-400 leading-relaxed mb-6">Smart fleet management dashboard for ambulances and specialized emergency transport setups.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-4 grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-300 font-mono">
+                            <span class="flex items-center gap-1.5">Fleet visibility</span>
+                            <span class="flex items-center gap-1.5">Dispatch engine</span>
+                            <span class="flex items-center gap-1.5">Driver management</span>
+                            <span class="flex items-center gap-1.5">Operational analytics</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Founders Grid Node Section Components -->
+            <section class="py-10">
+                <div class="text-center max-w-xl mx-auto mb-10">
+                    <span class="text-xs font-bold uppercase text-brandBlue tracking-wider font-display">Our Team</span>
+                    <h2 class="text-3xl md:text-5xl font-black font-display text-white mt-2">Meet The Founders</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="glass-panel p-8 rounded-3xl text-center border border-white/5 hover:border-brandBlue/30 transition-all duration-300 wave-card-node flex flex-col h-full">
+                        <div class="w-32 h-32 rounded-full overflow-hidden border border-white/10 mx-auto mb-6 bg-gradient-to-br from-brandBlue/25 to-emergencyRed/10 shrink-0">
+                            <img src="founder-vinayak.jpg" alt="Vinayak Manjunath Gouda" class="w-full h-full object-cover object-top">
+                        </div>
+                        <h4 class="text-2xl font-bold font-display text-white">Vinayak Manjunath Gouda</h4>
+                        <span class="text-xs font-semibold uppercase text-brandBlue tracking-wider mt-1 mb-4 block">Founder & CS Engineer</span>
+                        <p class="text-sm text-slate-400 font-light mb-6 flex-grow">
+                            An ambitious computer engineer driven by compassionate logic to remove administrative delays and build reliable clinical emergency transit networks.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="https://www.linkedin.com/in/vinayak-manjunath-gouda" target="_blank" class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-white/5 hover:bg-brandBlue hover:text-white border border-white/10 text-xs font-semibold text-gray-300 transition-all">
+                                <i class="fa-brands fa-linkedin text-sm"></i>
+                                <span>Connect on LinkedIn</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-8 rounded-3xl text-center border border-white/5 hover:border-brandBlue/30 transition-all duration-300 wave-card-node flex flex-col h-full">
+                        <div class="w-32 h-32 rounded-full overflow-hidden border border-white/10 mx-auto mb-6 bg-gradient-to-br from-brandBlue/25 to-emergencyRed/10 shrink-0">
+                            <img src="founder-keerthi.jpg" alt="K Keerthi Shree" class="w-full h-full object-cover object-top">
+                        </div>
+                        <h4 class="text-2xl font-bold font-display text-white">K Keerthi Shree</h4>
+                        <span class="text-xs font-semibold uppercase text-brandBlue tracking-wider mt-1 mb-4 block">Co-Founder & CS Engineer</span>
+                        <p class="text-sm text-slate-400 font-light mb-6 flex-grow">
+                            Healthcare operations expert and strategist dedicated to coordinating clinics, administrative safety setups, and local ambulance dispatch guidelines.
+                        </p>
+                        <div class="mt-auto">
+                            <a href="https://www.linkedin.com/in/keerthishree-k-58b0b4300" target="_blank" class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-white/5 hover:bg-brandBlue hover:text-white border border-white/10 text-xs font-semibold text-gray-300 transition-all">
+                                <i class="fa-brands fa-linkedin text-sm"></i>
+                                <span>Connect on LinkedIn</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 5. Contact Corporate Form View Block -->
+        <div class="w-full pt-12 pb-16 px-6 md:px-12 max-w-4xl mx-auto" id="page-contact">
+            <section class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-xs font-bold uppercase text-brandBlue tracking-wider font-display">Get In Touch</span>
+                <h1 class="text-4xl md:text-6xl font-black font-display tracking-tight text-white mt-3 mb-4">Contact Us</h1>
+                <p class="text-base text-slate-400 font-light leading-relaxed">
+                    Connect with our corporate team for partnerships, enterprise solutions, and operational inquiries.
+                </p>
+            </section>
+            <div class="glass-panel p-8 rounded-3xl border border-white/10 mb-8 shadow-glow-blue wave-card-node">
+                <h3 class="text-2xl font-bold font-display text-white mb-6 flex items-center gap-2">
+                    Contact us
+                </h3>
+                <form id="contactForm" onsubmit="handleFormSubmit(event); return false;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2">Full Name</label>
+                            <input class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter your full name" required="" type="text" id="fullName" name="fullName"/>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2">Organization</label>
+                            <input class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter your organization" required="" type="text" id="organization" name="organization"/>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2">Email Address</label>
+                            <input class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter your email" required="" type="email" id="email" name="email"/>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2">Phone Number</label>
+                            <input class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter your phone number" required="" type="tel" id="phone" name="phone"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2">Your Message</label>
+                        <textarea class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="How can our tech support your emergency initiatives?" required="" rows="5" id="message" name="message"></textarea>
+                    </div>
+                    <button
+id="submitBtn"
+class="w-full py-4 rounded-xl bg-gradient-to-r from-brandBlue to-blue-700 hover:shadow-glow-blue text-white font-bold tracking-wide transition-all flex items-center justify-center space-x-2"
+type="submit">
+
+    <span>Send Message</span>
+
+</button>
+                </form>
+           
+            </div>
+        </div>
+    </main>
+
+    <footer class="relative z-10 bg-[#050B14] border-t border-white/5 py-16 px-6 md:px-12 mt-20" id="mainFooter">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-2">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-white/5 p-0.5 flex items-center justify-center">
+                        <img src="logo.png" alt="EMSTRAP Logo" class="max-w-full max-h-full object-contain" />
+                    </div>
+                    <span class="text-xl font-bold font-display tracking-wider text-white">EMSTRAP</span>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed max-w-xs mb-6">
+                    Transforming emergency response through smart technology and real-time coordination. Saving lives, one second at a time.
+                </p>
+                <div class="flex items-center space-x-3">
+                    <a href="https://www.linkedin.com/company/emstrap/" target="_blank" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-brandBlue border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                        <i class="fa-brands fa-linkedin-in text-sm"></i>
+                    </a>
+                    <a href="mailto:info@emstrap.com" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-brandBlue border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                        <i class="fa-solid fa-envelope text-sm"></i>
+                    </a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold font-display uppercase tracking-widest text-white mb-5">Quick Links</h4>
+                <ul class="space-y-3 text-sm text-gray-400">
+                    <li><a class="hover:text-brandBlue transition-all" href="#page-home">Home</a></li>
+                    <li><a class="hover:text-brandBlue transition-all" href="#page-about">About</a></li>
+                    <li><a class="hover:text-brandBlue transition-all" href="#page-contact">Partner With Us</a></li>
+                    <li><a class="hover:text-brandBlue transition-all" href="#page-contact">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold font-display uppercase tracking-widest text-white mb-5">Legal</h4>
+                <ul class="space-y-3 text-sm text-gray-400">
+                    <li><a class="hover:text-brandBlue transition-all" href="privacy-policy.pdf" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
+                    <li><a class="hover:text-brandBlue transition-all" href="terms-and-conditions.pdf" target="_blank" rel="noopener noreferrer">Terms & Conditions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
+            <span class="uppercase tracking-wider">© 2026 EMSTRAP. All rights reserved.</span>
+            <a href="#page-landing" class="mt-4 md:mt-0 font-bold font-display tracking-wider text-brandBlue hover:text-white transition-all">EMSTRAP</a>
+        </div>
+    </footer>
+
+    <!-- Logo Lightbox Modal -->
+    <div id="logoLightbox" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md cursor-pointer" onclick="closeLogoLightbox()">
+        <div class="relative flex flex-col items-center gap-5 animate-scale-in" onclick="event.stopPropagation()">
+            <img src="logo.png" alt="EMSTRAP Logo" class="max-w-[70vw] max-h-[70vh] object-contain drop-shadow-2xl" />
+            <p class="text-xs text-slate-500 tracking-widest uppercase">Click outside to close</p>
+            <button onclick="closeLogoLightbox()" class="absolute -top-4 -right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-white transition-all">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md" id="successModal">
+        <div class="glass-panel p-8 rounded-3xl max-w-md w-full border border-brandBlue/30 text-center animate-scale-in" style="box-shadow: 0 0 40px rgba(0,82,255,0.15);">
+            <div class="w-16 h-16 rounded-full bg-brandBlue/15 border border-brandBlue/40 flex items-center justify-center mx-auto mb-5">
+                <i class="fa-solid fa-paper-plane text-2xl text-brandBlue"></i>
+            </div>
+            <h3 class="text-2xl font-bold font-display text-white mb-3">Email Sent!</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-7">
+                Your message has been sent. Our team will review your enquiry and get back to you shortly.
+            </p>
+            <button class="w-full py-3 rounded-xl bg-gradient-to-r from-brandBlue to-blue-700 hover:shadow-glow-blue text-white font-semibold tracking-wide transition-all duration-300 flex items-center justify-center gap-2" onclick="closeSuccessModal()">
+                <i class="fa-solid fa-xmark"></i> Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let globalWaveObserver;
+
+        function refreshWaveObserver() {
+            // Force reset any nodes before calculating intersection boundaries
+            document.querySelectorAll('.wave-card-node').forEach(node => {
+                node.classList.remove('wave-animate');
+            });
+
+            if (globalWaveObserver) globalWaveObserver.disconnect();
+
+            const waveCards = document.querySelectorAll('.wave-card-node');
+            const observerOptions = {
+                root: null,
+                threshold: 0.01,
+                rootMargin: "0px 0px -10px 0px"
+            };
+
+            globalWaveObserver = new IntersectionObserver((entries) => {
+                const entering = entries.filter(e => e.isIntersecting);
+                const leaving = entries.filter(e => !e.isIntersecting);
+
+                if (entering.length > 0) {
+                    entering.forEach((entry, index) => {
+                        setTimeout(() => {
+                            if (!entry.target.classList.contains('wave-animate')) {
+                                entry.target.classList.add('wave-animate');
+                            }
+                        }, index * 380); // slower serial wave delay
+                    });
+                }
+                leaving.forEach(entry => {
+                    entry.target.classList.remove('wave-animate');
+                });
+            }, observerOptions);
+
+            waveCards.forEach(card => globalWaveObserver.observe(card));
+        }
+
+        function trackScrollNavigation() {
+            const sections = document.querySelectorAll('#page-landing, #page-about, #page-solutions, #page-products, #page-contact');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let currentActiveId = "page-landing";
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const sectionTop = rect.top + window.scrollY - 130;
+                if (window.scrollY >= sectionTop) {
+                    currentActiveId = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentActiveId}`) {
+                    link.classList.add('active');
+                }
+            });
+
+            /* --- Header on scroll: darken/blur only, never add a border/seam --- */
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 40) {
+                header.classList.remove('py-5');
+                header.classList.add('py-4');
+                header.style.background = 'rgba(5, 11, 20, 0.85)';
+                header.style.backdropFilter = 'blur(14px)';
+                header.style.webkitBackdropFilter = 'blur(14px)';
+            } else {
+                header.classList.add('py-5');
+                header.classList.remove('py-4');
+                header.style.background = '';
+                header.style.backdropFilter = '';
+                header.style.webkitBackdropFilter = '';
+            }
+        }
+
+        window.addEventListener('scroll', trackScrollNavigation);
+
+        // --- Slower, eased smooth-scroll for all in-page anchor links ---
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function smoothScrollTo(targetY, duration) {
+            const startY = window.scrollY;
+            const distance = targetY - startY;
+            let startTime = null;
+
+            function step(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                const targetEl = document.querySelector(targetId);
+                if (!targetEl) return;
+                e.preventDefault();
+                const headerOffset = 110;
+                const targetY = targetEl.getBoundingClientRect().top + window.scrollY - headerOffset;
+                smoothScrollTo(targetY, 900); // normal-speed smooth jump to section
+            });
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        }
+
+        async function handleFormSubmit(event) {
+
+    event.preventDefault();
+
+    const form = document.getElementById("contactForm");
+
+    const submitButton = document.getElementById("submitBtn");
+
+    const fullName = form.querySelector("#fullName").value.trim();
+
+    const organization = form.querySelector("#organization").value.trim();
+
+    const email = form.querySelector("#email").value.trim();
+
+    const phone = form.querySelector("#phone").value.trim();
+
+    const message = form.querySelector("#message").value.trim();
+
+    if (
+        !fullName ||
+        !organization ||
+        !email ||
+        !phone ||
+        !message
+    ) {
+
+        alert("Please fill all fields.");
+
+        return;
+
+    }
+
+    submitButton.disabled = true;
+
+    const originalText = submitButton.innerHTML;
+
+    submitButton.innerHTML = "Sending...";
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:5000/api/contact",
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    fullName,
+
+                    organization,
+
+                    email,
+
+                    phone,
+
+                    message
+
+                })
+
+            }
+        );
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            document.getElementById('successModal').classList.remove('hidden');
+            document.getElementById('successModal').classList.add('flex');
+
+            form.reset();
+
+        }
+
+        else {
+
+            alert(result.message);
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("Unable to connect to server.");
+
+    }
+
+    finally {
+
+        submitButton.disabled = false;
+
+        submitButton.innerHTML = originalText;
+
+    }
+
+}
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        function openLogoLightbox(e) {
+            e.preventDefault();
+            const lb = document.getElementById('logoLightbox');
+            lb.classList.remove('hidden');
+            lb.classList.add('flex');
+        }
+
+        function closeLogoLightbox() {
+            const lb = document.getElementById('logoLightbox');
+            lb.classList.add('hidden');
+            lb.classList.remove('flex');
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLogoLightbox();
+                closeSuccessModal();
+            }
+        });
+
+        function runCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                if(counter.classList.contains('counted')) return;
+                const target = parseInt(counter.getAttribute('data-target'));
+                let current = 0;
+                const increment = Math.ceil(target / 80);
+                
+                const counterInterval = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        counter.classList.add('counted');
+                        clearInterval(counterInterval);
+                    }
+                    
+                    if (target >= 1000000) {
+                        counter.innerText = (current / 1000000).toFixed(0) + "M+";
+                    } else if (target >= 10000) {
+                        counter.innerText = (current / 1000).toFixed(0) + "K+";
+                    } else {
+                        counter.innerText = current + "+";
+                    }
+                }, 20);
+            });
+        }
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    runCounters();
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        const counterSection = document.querySelector('#page-home');
+        if(counterSection) counterObserver.observe(counterSection);
+
+        /* --- Simulation Logic --- */
+        let simState = {
+            type: null,
+            gps: { lat: 12.9716, lon: 77.5946 },
+            image: false,
+            accepted: false,
+            corridor: false,
+            camActive: false,
+            alertSent: false,
+            ambPos: { x: 10, y: 20 }
+        };
+
+        const simNodes = {
+            incident: { x: 65, y: 60 },
+            ambulance: { x: 10, y: 20 },
+            hospital: { x: 82, y: 25 },
+            police: { x: 40, y: 15 },
+            fire: { x: 18, y: 70 }
+        };
+
+        const simSignals = [
+            { x: 30, y: 30 }, { x: 45, y: 40 }, { x: 55, y: 50 }, { x: 70, y: 55 }
+        ];
+
+        let simInterval = null;
+
+        function openSimulation() {
+            document.getElementById('simModal').classList.remove('hidden');
+            document.getElementById('simModal').classList.add('flex');
+            simRenderSignals();
+        }
+
+        function closeSimulation() {
+            document.getElementById('simModal').classList.remove('flex');
+            document.getElementById('simModal').classList.add('hidden');
+            simStopCamera();
+            if(simInterval) clearInterval(simInterval);
+        }
+
+        function simAddLog(msg) {
+            const box = document.getElementById('simLogBox');
+            const empty = document.getElementById('simLogEmpty');
+            if (empty) empty.style.display = 'none';
+            const time = new Date().toLocaleTimeString();
+            const p = document.createElement('p');
+            p.innerHTML = `<span class="text-slate-500">[${time}]</span> ${msg}`;
+            box.appendChild(p);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function simStartCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                const video = document.getElementById('simVideo');
+                if (video) {
+                    video.srcObject = stream;
+                    simState.camActive = true;
+                }
+            } catch (err) {
+                simAddLog('⚠️ Camera unavailable. Use “Sample Image” to proceed.');
+            }
+        }
+
+        function simStopCamera() {
+            const video = document.getElementById('simVideo');
+            if (video && video.srcObject) {
+                video.srcObject.getTracks().forEach(t => t.stop());
+                video.srcObject = null;
+                simState.camActive = false;
+            }
+        }
+
+        async function simHandleAlert(type) {
+            simState.type = type;
+            document.getElementById('simCameraSection').classList.remove('hidden');
+            document.getElementById('simSendBtn').disabled = !simState.image;
+            document.getElementById('simTypeLabel').innerText = type.toUpperCase();
+            
+            if(type === 'fire') document.getElementById('simNodeFire').classList.remove('hidden');
+            else document.getElementById('simNodeFire').classList.add('hidden');
+
+            document.getElementById('simNodeIncident').classList.remove('hidden');
+
+            simAddLog(`Alert type selected: <b>${type.toUpperCase()}</b>. Camera opened – capture required.`);
+            await simStartCamera();
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    simState.gps = { lat: +pos.coords.latitude.toFixed(5), lon: +pos.coords.longitude.toFixed(5) };
+                    document.getElementById('simGpsLabel').innerText = `${simState.gps.lat}, ${simState.gps.lon}`;
+                    simAddLog(`GPS captured: ${simState.gps.lat}, ${simState.gps.lon}`);
+                }, () => {
+                    simAddLog('GPS permission denied – using default Bengaluru coords.');
+                });
+            }
+        }
+
+        function simCaptureImage() {
+            const video = document.getElementById('simVideo');
+            const canvas = document.getElementById('simCanvas');
+            if (video && canvas) {
+                const w = video.videoWidth || 640;
+                const h = video.videoHeight || 360;
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, w, h);
+                canvas.classList.remove('hidden');
+                simState.image = true;
+                document.getElementById('simImgLabel').innerText = 'Captured ✅';
+                document.getElementById('simSendBtn').disabled = false;
+                simAddLog('Image captured and attached to the alert.');
+            }
+        }
+
+        function simUseSampleImage() {
+            const canvas = document.getElementById('simCanvas');
+            if (canvas) {
+                canvas.width = 640;
+                canvas.height = 360;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#111'; ctx.fillRect(0, 0, 640, 360);
+                ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(480, 240, 50, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#22c55e'; ctx.fillRect(60, 90, 28, 28);
+                ctx.fillStyle = '#eab308'; ctx.fillRect(520, 60, 32, 32);
+                ctx.fillStyle = '#60a5fa'; ctx.beginPath(); ctx.arc(260, 70, 18, 0, Math.PI * 2); ctx.fill();
+                
+                canvas.classList.remove('hidden');
+                simState.image = true;
+                document.getElementById('simImgLabel').innerText = 'Sample ✅';
+                document.getElementById('simSendBtn').disabled = false;
+                simAddLog('Sample image generated and attached to the alert.');
+            }
+        }
+
+        function simSendAlert() {
+            simStopCamera();
+            simState.alertSent = true;
+            document.getElementById('simSendBtn').disabled = true;
+            simAddLog('📤 Alert sent to server with image & GPS.');
+            setTimeout(() => {
+                simAddLog('🔎 Finding nearest responders…');
+                setTimeout(() => {
+                    simAddLog(`✅ Selected: <b>Ambulance A</b> (2.6 km), <b>City Care Hospital</b> (4.1 km), <b>Highway Police</b> (2.0 km)${simState.type === 'fire' ? ' , <b>Fire Station 12</b> (3.4 km)' : ''}.`);
+                    simNotifyResponders();
+                }, 900);
+            }, 500);
+        }
+
+        function simNotifyResponders() {
+            simAddLog('📨 Notifications dispatched via WhatsApp/SMS/App to responders (image + location attached).');
+            setTimeout(() => {
+                simState.accepted = true;
+                simState.corridor = true;
+                simRenderSignals();
+                simAddLog('🚑 Ambulance A → <b>“I’m responding”</b>. Details shared with Citizen, Police, and Hospital.');
+                simAddLog('🟢 Green Corridor activated on route – traffic signals set to priority green.');
+                simStartAmbulanceAnimation();
+            }, 1200);
+        }
+
+        function simStartAmbulanceAnimation() {
+            let x = simNodes.ambulance.x;
+            let y = simNodes.ambulance.y;
+            const tx = simNodes.incident.x;
+            const ty = simNodes.incident.y;
+
+            simInterval = setInterval(() => {
+                const dx = tx - x;
+                const dy = ty - y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist < 1) {
+                    clearInterval(simInterval);
+                    simState.ambPos = { x: tx, y: ty };
+                    simUpdateAmbPos();
+                    simAddLog('✅ Ambulance arrived at incident. Hospital pre-alerted; Police managing traffic.');
+                    setTimeout(() => {
+                        simAddLog('🚑 Transporting patient to hospital…');
+                        simMoveToHospital(tx, ty);
+                    }, 900);
+                } else {
+                    const spd = 0.5;
+                    x += (dx / dist) * spd;
+                    y += (dy / dist) * spd;
+                    simState.ambPos = { x, y };
+                    simUpdateAmbPos();
+                }
+            }, 30);
+        }
+
+        function simMoveToHospital(startX, startY) {
+            let x = startX;
+            let y = startY;
+            const tx = simNodes.hospital.x;
+            const ty = simNodes.hospital.y;
+
+            simInterval = setInterval(() => {
+                const dx = tx - x;
+                const dy = ty - y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist < 1) {
+                    clearInterval(simInterval);
+                    simState.ambPos = { x: tx, y: ty };
+                    simState.corridor = false;
+                    simUpdateAmbPos();
+                    simRenderSignals();
+                    simAddLog('🏥 Reached hospital. Handover complete. Case closed. ✅');
+                    simAddLog('🚦 Green Corridor deactivated. Normal traffic restored.');
+                } else {
+                    const spd = 0.6;
+                    x += (dx / dist) * spd;
+                    y += (dy / dist) * spd;
+                    simState.ambPos = { x, y };
+                    simUpdateAmbPos();
+                }
+            }, 30);
+        }
+
+        function simUpdateAmbPos() {
+            document.getElementById('simNodeAmbulance').style.left = `${simState.ambPos.x}%`;
+            document.getElementById('simNodeAmbulance').style.top = `${simState.ambPos.y}%`;
+        }
+
+        function simRenderSignals() {
+            const container = document.getElementById('simSignalsContainer');
+            container.innerHTML = '';
+            simSignals.forEach(s => {
+                const div = document.createElement('div');
+                div.className = "absolute w-2.5 h-6 bg-slate-800 border border-slate-700 rounded-sm flex flex-col justify-between p-0.5 z-20";
+                div.style.left = `${s.x}%`;
+                div.style.top = `${s.y}%`;
+                
+                const red = document.createElement('div');
+                red.className = `w-full h-1.5 rounded-sm transition-colors duration-500 ${simState.corridor ? 'bg-red-500/10' : 'bg-red-500'}`;
+                
+                const amber = document.createElement('div');
+                amber.className = "w-full h-1.5 rounded-sm bg-amber-500/10";
+                
+                const green = document.createElement('div');
+                green.className = `w-full h-1.5 rounded-sm transition-colors duration-500 ${simState.corridor ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]' : 'bg-green-500/20'}`;
+                
+                div.appendChild(red);
+                div.appendChild(amber);
+                div.appendChild(green);
+                container.appendChild(div);
+            });
+        }
+
+        function simReset() {
+            simStopCamera();
+            if(simInterval) clearInterval(simInterval);
+            
+            simState = {
+                type: null,
+                gps: { lat: 12.9716, lon: 77.5946 },
+                image: false,
+                accepted: false,
+                corridor: false,
+                camActive: false,
+                alertSent: false,
+                ambPos: { x: 10, y: 20 }
+            };
+
+            const box = document.getElementById('simLogBox');
+            box.innerHTML = '<p class="text-slate-600 italic" id="simLogEmpty">Awaiting events...</p>';
+            
+            document.getElementById('simCameraSection').classList.add('hidden');
+            document.getElementById('simCanvas').classList.add('hidden');
+            document.getElementById('simTypeLabel').innerText = '–';
+            document.getElementById('simGpsLabel').innerText = '12.9716, 77.5946';
+            document.getElementById('simImgLabel').innerText = 'Not captured';
+            document.getElementById('simSendBtn').disabled = true;
+            
+            document.getElementById('simNodeIncident').classList.add('hidden');
+            document.getElementById('simNodeFire').classList.add('hidden');
+            
+            simUpdateAmbPos();
+            simRenderSignals();
+            
+            simAddLog('Simulation reset.');
+        }
+
+        window.onload = function () {
+            refreshWaveObserver();
+            trackScrollNavigation();
+
+        // Move simulation initialization to the end or call it directly.
+
+            // Seamless Premium Section Transitions
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                
+                gsap.utils.toArray('main > div, main section').forEach(section => {
+                    gsap.fromTo(section, 
+                        { opacity: 0, y: 50 }, 
+                        { 
+                            opacity: 1, 
+                            y: 0, 
+                            duration: 1.2, 
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: section,
+                                start: "top 85%",
+                                toggleActions: "play none none reverse"
+                            }
+                        }
+                    );
+                });
+            }
+        }
+    </script>
+
+    <!-- Simulation Modal -->
+    <div id="simModal" class="hidden fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-sm items-center justify-center p-4 overflow-y-auto">
+      <div class="w-full max-w-6xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
+        <header class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🚨</span>
+            <h1 class="text-xl font-bold text-slate-100">EMSTRAP – Emergency Response Visual Simulation</h1>
+            <span class="text-xs px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full">Demo • No real data</span>
+          </div>
+          <button onclick="closeSimulation()" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 grid lg:grid-cols-[350px_1fr] gap-6">
+          <!-- Sidebar -->
+          <div class="space-y-6">
+            <section class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5">
+              <h3 class="text-slate-100 font-bold mb-2">1) Raise Alert</h3>
+              <p class="text-slate-400 text-sm mb-4">Select an emergency type. Capture an image to enable sending.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="simHandleAlert('slight')" class="px-3 py-2 text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20 rounded-xl hover:bg-green-500/20 transition-all">🟢 Slight</button>
+                <button onclick="simHandleAlert('extreme')" class="px-3 py-2 text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl hover:bg-amber-500/20 transition-all">🟠 Extreme</button>
+                <button onclick="simHandleAlert('fire')" class="px-3 py-2 text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">🔴 Fire</button>
+              </div>
+
+              <div id="simCameraSection" class="hidden space-y-4 animate-in fade-in slide-in-from-top-2">
+                <div class="relative rounded-xl overflow-hidden bg-black aspect-video">
+                  <video id="simVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                  <canvas id="simCanvas" class="absolute inset-0 w-full h-full object-cover hidden"></canvas>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="simCaptureImage()" class="flex-1 py-2 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition-all">📸 Capture</button>
+                  <button onclick="simUseSampleImage()" class="flex-1 py-2 bg-slate-700 text-white rounded-xl font-bold text-sm hover:bg-slate-600 transition-all">🖼️ Sample</button>
+                </div>
+                <button id="simSendBtn" onclick="simSendAlert()" disabled class="w-full py-3 bg-blue-600 disabled:bg-slate-700 text-white rounded-xl font-bold hover:bg-blue-700 transition-all">📤 Send Alert</button>
+              </div>
+
+              <div class="mt-4 pt-4 border-t border-slate-700/50 grid grid-cols-[80px_1fr] gap-2 text-xs">
+                <div class="text-slate-500">Type</div><div id="simTypeLabel" class="text-slate-300 font-mono">–</div>
+                <div class="text-slate-500">GPS</div><div id="simGpsLabel" class="text-slate-300 font-mono">12.9716, 77.5946</div>
+                <div class="text-slate-500">Image</div><div id="simImgLabel" class="text-slate-300 font-mono">Not captured</div>
+              </div>
+            </section>
+
+            <section class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5 flex flex-col h-[250px]">
+              <h3 class="text-slate-100 font-bold mb-2">2) System Log</h3>
+              <div id="simLogBox" class="flex-1 bg-black/40 rounded-xl p-3 font-mono text-[11px] overflow-y-auto space-y-2 border border-slate-700/30 text-slate-300">
+                <p class="text-slate-600 italic" id="simLogEmpty">Awaiting events...</p>
+              </div>
+            </section>
+
+            <div class="flex gap-2">
+              <button onclick="simReset()" class="flex-1 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold text-sm hover:bg-slate-700 transition-all">🔄 Reset Simulation</button>
+            </div>
+          </div>
+
+          <!-- Map Area -->
+          <section class="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-5 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-slate-100 font-bold">3) City View & Live Tracking</h3>
+              <div class="flex gap-3 text-[10px] font-bold uppercase tracking-wider">
+                <span class="flex items-center gap-1.5 text-red-400"><span class="w-2 h-2 rounded-full bg-red-500"></span> Incident</span>
+                <span class="flex items-center gap-1.5 text-green-400"><span class="w-2 h-2 rounded-sm bg-green-500"></span> Ambulance</span>
+                <span class="flex items-center gap-1.5 text-blue-400"><span class="w-2 h-2 rounded-full bg-blue-400"></span> Police</span>
+                <span class="flex items-center gap-1.5 text-yellow-400"><span class="w-2 h-2 rounded-sm bg-yellow-500"></span> Hospital</span>
+              </div>
+            </div>
+
+            <div class="flex-1 bg-slate-950 rounded-2xl relative overflow-hidden border border-slate-800 min-h-[400px]">
+              <!-- Grid Background -->
+              <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 40px 40px"></div>
+              
+              <!-- Traffic Signals -->
+              <div id="simSignalsContainer"></div>
+
+              <!-- Static Nodes -->
+              <div class="absolute w-4 h-4 bg-yellow-500 rounded-sm shadow-[0_0_10px_rgba(234,179,8,0.5)]" style="left: 82%; top: 25%; transform: translate(-50%, -50%)">
+                <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap text-[8px] font-bold text-yellow-400 bg-slate-900/80 px-1 rounded">Hospital</div>
+              </div>
+              <div class="absolute w-3 h-3 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(96,165,250,0.5)]" style="left: 40%; top: 15%; transform: translate(-50%, -50%)">
+                <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap text-[8px] font-bold text-blue-400 bg-slate-900/80 px-1 rounded">Police</div>
+              </div>
+              <div id="simNodeFire" class="hidden absolute w-3 h-3 bg-rose-400 rounded-full shadow-[0_0_10px_rgba(251,113,133,0.5)]" style="left: 18%; top: 70%; transform: translate(-50%, -50%)">
+                <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap text-[8px] font-bold text-rose-400 bg-slate-900/80 px-1 rounded">Fire</div>
+              </div>
+
+              <!-- Dynamic Nodes -->
+              <div id="simNodeIncident" class="hidden absolute w-4 h-4 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.6)] animate-pulse" style="left: 65%; top: 60%; transform: translate(-50%, -50%)">
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap text-[10px] font-bold text-red-400 bg-slate-900/80 px-1.5 py-0.5 rounded border border-red-500/30">EMERGENCY</div>
+              </div>
+
+              <div id="simNodeAmbulance" class="absolute w-4 h-4 bg-green-500 rounded-sm shadow-[0_0_15px_rgba(34,197,94,0.6)] transition-all duration-300" style="left: 10%; top: 20%; transform: translate(-50%, -50%)">
+                <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap text-[8px] font-bold text-green-400 bg-slate-900/80 px-1 rounded">AMBULANCE A</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <script>
+     const navLinks = document.querySelectorAll(".nav-link");
+
+navLinks.forEach(link => {
+    link.addEventListener("click", function () {
+        navLinks.forEach(item => item.classList.remove("active"));
+        this.classList.add("active");
+    });
+});
+</script>
+
+</body>
+</html>
