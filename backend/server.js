@@ -7,6 +7,7 @@ require("dotenv").config();
 const contactRoute = require("./routes/contact");
 
 const app = express();
+app.set("trust proxy", 1);
 
 app.use(helmet());
 
