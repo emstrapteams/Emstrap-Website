@@ -1300,8 +1300,8 @@ type="submit">
             document.getElementById('simNodeFire').classList.add('hidden');
             
             // Reset booking fields
-            document.getElementById('bookPickup').value = '';
-            document.getElementById('bookDrop').value = '';
+            document.getElementById('bookPickup').value = 'Majestic Bus Station, Bengaluru';
+            document.getElementById('bookDrop').value = 'Fortis Hospital, Bannerghatta Road';
             document.querySelectorAll('input[name="ambType"]').forEach(r => {
                 if (r.value === 'basic') r.checked = true;
             });
@@ -1507,7 +1507,7 @@ type="submit">
                     <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-1">Pickup Location</label>
                     <div class="relative">
                       <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">📍</span>
-                      <input id="bookPickup" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl pl-10 pr-4 py-3 text-sm text-white transition-all" placeholder="Search pickup address..." type="text" autocomplete="off" oninput="showSuggestions('bookPickup', 'pickupSuggestions')" onblur="hideSuggestions('pickupSuggestions')" />
+                      <input id="bookPickup" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl pl-10 pr-4 py-3 text-sm text-white transition-all" value="Majestic Bus Station, Bengaluru" placeholder="Search pickup address..." type="text" autocomplete="off" oninput="showSuggestions('bookPickup', 'pickupSuggestions')" onblur="hideSuggestions('pickupSuggestions')" />
                     </div>
                     <div id="pickupSuggestions" class="hidden absolute left-0 right-0 mt-1 bg-slate-950 border border-slate-800 rounded-xl max-h-48 overflow-y-auto z-50 shadow-2xl"></div>
                   </div>
@@ -1515,7 +1515,7 @@ type="submit">
                     <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-1">Drop Location</label>
                     <div class="relative">
                       <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🏁</span>
-                      <input id="bookDrop" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl pl-10 pr-4 py-3 text-sm text-white transition-all" placeholder="Search drop address..." type="text" autocomplete="off" oninput="showSuggestions('bookDrop', 'dropSuggestions')" onblur="hideSuggestions('dropSuggestions')" />
+                      <input id="bookDrop" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl pl-10 pr-4 py-3 text-sm text-white transition-all" value="Fortis Hospital, Bannerghatta Road" placeholder="Search drop address..." type="text" autocomplete="off" oninput="showSuggestions('bookDrop', 'dropSuggestions')" onblur="hideSuggestions('dropSuggestions')" />
                     </div>
                     <div id="dropSuggestions" class="hidden absolute left-0 right-0 mt-1 bg-slate-950 border border-slate-800 rounded-xl max-h-48 overflow-y-auto z-50 shadow-2xl"></div>
                   </div>
