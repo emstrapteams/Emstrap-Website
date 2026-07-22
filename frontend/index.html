@@ -183,8 +183,12 @@
 
     <!-- Persistent Header Navigation -->
     <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent py-5 bg-gradient-to-b from-brandDark/80 via-brandDark/30 to-transparent" id="mainHeader">
-        <div class="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between flex-row-reverse md:flex-row">
-            <a class="flex items-center space-x-3 group" href="#page-landing">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button class="md:hidden text-white hover:text-brandBlue transition-colors p-2 text-xl focus:outline-none" id="mobileMenuBtn" aria-label="Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a class="flex items-center space-x-3 group" href="#page-landing">
 <div class="w-12 h-12 rounded-full overflow-hidden bg-white p-1 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 cursor-zoom-in border border-white/20 shadow-lg"
      onclick="openLogoLightbox(event)">
     <img src="logo.png"
@@ -195,6 +199,7 @@
                     <span class="text-[9px] font-bold tracking-widest text-red-400 uppercase">Emergency</span>
                 </div>
             </a>
+            </div>
             <nav class="hidden md:flex items-center space-x-10">
     <a class="nav-link text-sm font-semibold transition-colors duration-200 active" href="#page-landing" id="nav-home">Home</a>
 
@@ -216,9 +221,6 @@
         <span>Request Demo</span>
     </span>
 </a>
-                <button class="md:hidden text-white hover:text-brandBlue transition-colors p-2 text-xl focus:outline-none" id="mobileMenuBtn" aria-label="Menu">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
             </div>
         </div>
         <div class="hidden absolute top-full left-0 right-0 glass-panel  flex-col py-6 px-8 space-y-4" id="mobileMenu">
@@ -608,22 +610,124 @@ type="submit">
         </div>
     </div>
 
-    <!-- Booking Modal (Feature Under Development) -->
+    <!-- Booking Modal (Interactive Simulation) -->
     <div id="bookingModal" class="hidden fixed inset-0 z-[110] bg-black/80 backdrop-blur-md items-center justify-center p-4">
-      <div class="glass-panel p-8 rounded-3xl max-w-md w-full border border-slate-800 text-center text-slate-100 animate-scale-in" style="box-shadow: 0 0 40px rgba(255,255,255,0.05);">
+      <div class="glass-panel p-8 rounded-3xl max-w-md w-full border border-slate-800 text-left text-slate-100 animate-scale-in relative" style="box-shadow: 0 0 40px rgba(0, 82, 255, 0.15);">
         <button onclick="closeBookingModal()" class="absolute top-4 right-4 p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
           <i class="fa-solid fa-xmark text-xl"></i>
         </button>
-        <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <span class="text-4xl">📅</span>
+
+        <div class="text-center mb-6">
+          <span class="text-3xl">📅</span>
+          <h2 class="text-xl font-bold text-white mt-2">Ambulance Booking</h2>
+          <p class="text-xs text-slate-400">Book planned medical transport</p>
         </div>
-        <h2 class="text-2xl font-bold text-white mb-4">Feature Under Development</h2>
-        <p class="text-slate-400 font-medium leading-relaxed mb-8">
-          The ambulance booking feature is currently under development and will be available soon.
-        </p>
-        <button onclick="closeBookingModal()" class="w-full py-4 bg-slate-800 hover:bg-slate-750 text-white rounded-xl font-bold transition-all">
-          Close
-        </button>
+
+        <!-- Step 1: Pickup & Drop -->
+        <div id="bookStep1" class="space-y-4">
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2">Pickup Location</label>
+            <input id="bookPickup" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter pickup address" type="text" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-2">Drop Location</label>
+            <input id="bookDrop" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter drop address" type="text" />
+          </div>
+          <button onclick="bookGoToStep2()" class="w-full py-4 rounded-xl bg-gradient-to-r from-brandBlue to-blue-700 hover:shadow-glow-blue text-white font-bold tracking-wide transition-all flex items-center justify-center">
+            Next: Select Ambulance
+          </button>
+        </div>
+
+        <!-- Step 2: Ambulance Type -->
+        <div id="bookStep2" class="hidden space-y-4">
+          <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-1">Select Ambulance Type</label>
+          <div class="space-y-2">
+            <label class="flex items-center justify-between p-3 rounded-xl border border-white/10 hover:border-brandBlue/50 cursor-pointer bg-brandDark/40">
+              <span class="flex items-center gap-2">
+                <input type="radio" name="ambType" value="basic" checked onclick="bookSetType('basic', 1000)" />
+                <span class="text-sm font-medium">Basic Life Support (BLS)</span>
+              </span>
+              <span class="text-sm font-bold text-brandBlue">₹1,000</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-white/10 hover:border-brandBlue/50 cursor-pointer bg-brandDark/40">
+              <span class="flex items-center gap-2">
+                <input type="radio" name="ambType" value="oxygen" onclick="bookSetType('oxygen', 1500)" />
+                <span class="text-sm font-medium">Oxygen Ambulance</span>
+              </span>
+              <span class="text-sm font-bold text-brandBlue">₹1,500</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-white/10 hover:border-brandBlue/50 cursor-pointer bg-brandDark/40">
+              <span class="flex items-center gap-2">
+                <input type="radio" name="ambType" value="pregnancy" onclick="bookSetType('pregnancy', 2000)" />
+                <span class="text-sm font-medium">Pregnancy Support</span>
+              </span>
+              <span class="text-sm font-bold text-brandBlue">₹2,000</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-white/10 hover:border-brandBlue/50 cursor-pointer bg-brandDark/40">
+              <span class="flex items-center gap-2">
+                <input type="radio" name="ambType" value="icu" onclick="bookSetType('icu', 3500)" />
+                <span class="text-sm font-medium">ICU / Advanced (ALS)</span>
+              </span>
+              <span class="text-sm font-bold text-brandBlue">₹3,500</span>
+            </label>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="bookGoToStep(1)" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all text-center">Back</button>
+            <button onclick="bookGoToStep3()" class="flex-1 py-3 bg-gradient-to-r from-brandBlue to-blue-700 hover:shadow-glow-blue text-white font-bold transition-all text-center">Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Payment Summary & Booking -->
+        <div id="bookStep3" class="hidden space-y-4">
+          <div class="p-4 bg-brandDark/80 rounded-xl border border-white/5 space-y-2 text-sm text-slate-300">
+            <div><span class="text-slate-500">From:</span> <span id="summaryPickup" class="font-semibold text-white"></span></div>
+            <div><span class="text-slate-500">To:</span> <span id="summaryDrop" class="font-semibold text-white"></span></div>
+            <div><span class="text-slate-500">Ambulance:</span> <span id="summaryType" class="font-semibold text-white"></span></div>
+            <div class="border-t border-white/10 pt-2 flex justify-between font-bold text-base text-white">
+              <span>Total Cost:</span>
+              <span id="summaryPrice" class="text-brandBlue"></span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="bookGoToStep(2)" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all">Back</button>
+            <button onclick="bookCompleteBooking()" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-700 hover:shadow-glow-green text-white font-bold transition-all flex items-center justify-center space-x-2">
+              <span>💳</span> <span>Pay &amp; Book</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 4: Success / Driver Info -->
+        <div id="bookStep4" class="hidden text-center space-y-5">
+          <div class="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/40 flex items-center justify-center mx-auto mb-2 animate-pulse">
+            <i class="fa-solid fa-circle-check text-3xl text-green-400"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white">Driver Booked Successfully!</h3>
+            <p class="text-xs text-slate-400 mt-1">Your ambulance is on the way</p>
+          </div>
+          <div class="p-4 bg-brandDark/80 rounded-xl border border-white/5 text-left text-xs space-y-2 text-slate-300">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Driver Name:</span>
+              <span class="font-semibold text-white">Ramesh Kumar</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Contact Number:</span>
+              <span class="font-semibold text-white">+91 98765 43210</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Vehicle Number:</span>
+              <span class="font-semibold text-white">KA 03 AA 4829</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Estimated Arrival (ETA):</span>
+              <span class="font-semibold text-green-400 font-mono">5 Mins</span>
+            </div>
+          </div>
+          <button onclick="closeBookingModal()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all">
+            Close
+          </button>
+        </div>
+
       </div>
     </div>
 
@@ -1200,16 +1304,82 @@ type="submit">
             simAddLog('Simulation reset.');
         }
 
+        let bookState = {
+            pickup: '',
+            drop: '',
+            type: 'basic',
+            price: 1000
+        };
+
+        function bookSetType(type, price) {
+            bookState.type = type;
+            bookState.price = price;
+        }
+
+        function bookGoToStep(stepNum) {
+            document.getElementById('bookStep1').classList.add('hidden');
+            document.getElementById('bookStep2').classList.add('hidden');
+            document.getElementById('bookStep3').classList.add('hidden');
+            document.getElementById('bookStep4').classList.add('hidden');
+
+            document.getElementById('bookStep' + stepNum).classList.remove('hidden');
+        }
+
+        function bookGoToStep2() {
+            const p = document.getElementById('bookPickup').value.trim();
+            const d = document.getElementById('bookDrop').value.trim();
+            if (!p || !d) {
+                alert("Please enter both Pickup and Drop locations.");
+                return;
+            }
+            bookState.pickup = p;
+            bookState.drop = d;
+            bookGoToStep(2);
+        }
+
+        function bookGoToStep3() {
+            document.getElementById('summaryPickup').innerText = bookState.pickup;
+            document.getElementById('summaryDrop').innerText = bookState.drop;
+            
+            let label = "Basic Life Support (BLS)";
+            if (bookState.type === 'oxygen') label = "Oxygen Ambulance";
+            if (bookState.type === 'pregnancy') label = "Pregnancy Support";
+            if (bookState.type === 'icu') label = "ICU / Advanced Life Support (ALS)";
+            
+            document.getElementById('summaryType').innerText = label;
+            document.getElementById('summaryPrice').innerText = "₹" + bookState.price.toLocaleString();
+            bookGoToStep(3);
+        }
+
+        function bookCompleteBooking() {
+            bookGoToStep(4);
+        }
+
         function openBookingModal() {
             const modal = document.getElementById('bookingModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            bookGoToStep(1);
         }
 
         function closeBookingModal() {
             const modal = document.getElementById('bookingModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            
+            // Reset fields
+            document.getElementById('bookPickup').value = '';
+            document.getElementById('bookDrop').value = '';
+            document.querySelectorAll('input[name="ambType"]').forEach(r => {
+                if (r.value === 'basic') r.checked = true;
+            });
+            bookState = {
+                pickup: '',
+                drop: '',
+                type: 'basic',
+                price: 1000
+            };
+            bookGoToStep(1);
         }
 
         window.onload = function () {
