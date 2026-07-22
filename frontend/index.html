@@ -1377,6 +1377,56 @@ type="submit">
             bookGoToStep(1);
         }
 
+        const mockLocations = [
+            "Kempegowda International Airport (BLR)",
+            "Majestic Bus Station, Bengaluru",
+            "Indiranagar Metro Station, Bengaluru",
+            "Fortis Hospital, Bannerghatta Road",
+            "Apollo Hospitals, Jayanagar",
+            "Manipal Hospital, HAL Old Airport Road",
+            "Narayana Health City, Bommasandra",
+            "MG Road Metro Station, Bengaluru",
+            "Koramangala 4th Block, Bengaluru",
+            "Whitefield Railway Station, Bengaluru"
+        ];
+
+        function showSuggestions(inputId, suggestionsId) {
+            const val = document.getElementById(inputId).value.toLowerCase();
+            const container = document.getElementById(suggestionsId);
+            container.innerHTML = '';
+
+            if (!val) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            const matches = mockLocations.filter(loc => loc.toLowerCase().includes(val));
+            if (matches.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            matches.forEach(loc => {
+                const div = document.createElement('div');
+                div.className = "px-4 py-2.5 text-[11px] text-slate-300 hover:bg-brandBlue hover:text-white cursor-pointer transition-colors border-b border-white/5 last:border-0";
+                div.innerText = loc;
+                div.onmousedown = function() {
+                    document.getElementById(inputId).value = loc;
+                    container.classList.add('hidden');
+                };
+                container.appendChild(div);
+            });
+
+            container.classList.remove('hidden');
+        }
+
+        function hideSuggestions(suggestionsId) {
+            setTimeout(() => {
+                const container = document.getElementById(suggestionsId);
+                if(container) container.classList.add('hidden');
+            }, 150);
+        }
+
         window.onload = function () {
             refreshWaveObserver();
             trackScrollNavigation();
@@ -1453,13 +1503,21 @@ type="submit">
               <div id="simBookingSection" class="hidden space-y-4 animate-in fade-in slide-in-from-top-2">
                 <!-- Step 1: Pickup & Drop -->
                 <div id="bookStep1" class="space-y-4">
-                  <div>
+                  <div class="relative">
                     <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-1">Pickup Location</label>
-                    <input id="bookPickup" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter pickup address" type="text" />
+                    <div class="relative">
+                      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">📍</span>
+                      <input id="bookPickup" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl pl-10 pr-4 py-3 text-sm text-white transition-all" placeholder="Search pickup address..." type="text" autocomplete="off" oninput="showSuggestions('bookPickup', 'pickupSuggestions')" onblur="hideSuggestions('pickupSuggestions')" />
+                    </div>
+                    <div id="pickupSuggestions" class="hidden absolute left-0 right-0 mt-1 bg-slate-950 border border-slate-800 rounded-xl max-h-48 overflow-y-auto z-50 shadow-2xl"></div>
                   </div>
-                  <div>
+                  <div class="relative">
                     <label class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-1">Drop Location</label>
-                    <input id="bookDrop" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all" placeholder="Enter drop address" type="text" />
+                    <div class="relative">
+                      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🏁</span>
+                      <input id="bookDrop" class="w-full bg-brandDark border border-white/10 focus:border-brandBlue focus:outline-none rounded-xl pl-10 pr-4 py-3 text-sm text-white transition-all" placeholder="Search drop address..." type="text" autocomplete="off" oninput="showSuggestions('bookDrop', 'dropSuggestions')" onblur="hideSuggestions('dropSuggestions')" />
+                    </div>
+                    <div id="dropSuggestions" class="hidden absolute left-0 right-0 mt-1 bg-slate-950 border border-slate-800 rounded-xl max-h-48 overflow-y-auto z-50 shadow-2xl"></div>
                   </div>
                   <button onclick="bookGoToStep2()" class="w-full py-4 rounded-xl bg-gradient-to-r from-brandBlue to-blue-700 hover:shadow-glow-blue text-white font-bold tracking-wide transition-all flex items-center justify-center">
                     Next: Select Ambulance
