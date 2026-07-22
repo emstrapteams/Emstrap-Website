@@ -85,7 +85,8 @@
         .hero-viewport {
             position: relative;
             width: 100%;
-            min-height: 68vh;
+            min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
             background: #050B14;
         }
@@ -182,7 +183,7 @@
 
     <!-- Persistent Header Navigation -->
     <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent py-5 bg-gradient-to-b from-brandDark/80 via-brandDark/30 to-transparent" id="mainHeader">
-        <div class="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between flex-row-reverse md:flex-row">
             <a class="flex items-center space-x-3 group" href="#page-landing">
 <div class="w-12 h-12 rounded-full overflow-hidden bg-white p-1 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 cursor-zoom-in border border-white/20 shadow-lg"
      onclick="openLogoLightbox(event)">
@@ -215,8 +216,8 @@
         <span>Request Demo</span>
     </span>
 </a>
-                <button class="md:hidden text-white hover:text-brandBlue transition-colors p-2 text-sm font-bold tracking-wider focus:outline-none" id="mobileMenuBtn">
-                    MENU
+                <button class="md:hidden text-white hover:text-brandBlue transition-colors p-2 text-xl focus:outline-none" id="mobileMenuBtn" aria-label="Menu">
+                    <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </div>
