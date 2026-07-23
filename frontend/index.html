@@ -1298,6 +1298,8 @@ type="submit">
             
             document.getElementById('simNodeIncident').classList.add('hidden');
             document.getElementById('simNodeFire').classList.add('hidden');
+            document.getElementById('simNodePickup').classList.add('hidden');
+            document.getElementById('simNodeDrop').classList.add('hidden');
             
             // Reset booking fields
             document.getElementById('bookPickup').value = 'Majestic Bus Station, Bengaluru';
@@ -1366,8 +1368,77 @@ type="submit">
             bookGoToStep(3);
         }
 
+        function bookStartAmbulanceAnimation() {
+            // Make pickup and drop markers visible
+            document.getElementById('simNodePickup').classList.remove('hidden');
+            document.getElementById('simNodeDrop').classList.remove('hidden');
+
+            simAddLog(`📅 Booking confirmed! Dispatching Ambulance A to: <b>${bookState.pickup}</b>.`);
+
+            let x = 10;
+            let y = 20;
+            const px = 30;
+            const py = 65;
+
+            simInterval = setInterval(() => {
+                const dx = px - x;
+                const dy = py - y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist < 1) {
+                    clearInterval(simInterval);
+                    simState.ambPos = { x: px, y: py };
+                    simUpdateAmbPos();
+                    simAddLog(`🚑 Ambulance arrived at: <b>${bookState.pickup}</b>. Patient boarded successfully.`);
+                    
+                    setTimeout(() => {
+                        simAddLog(`🛣️ En route to destination: <b>${bookState.drop}</b>…`);
+                        bookMoveToDestination();
+                    }, 1200);
+                } else {
+                    const spd = 0.5;
+                    x += (dx / dist) * spd;
+                    y += (dy / dist) * spd;
+                    simState.ambPos = { x, y };
+                    simUpdateAmbPos();
+                }
+            }, 30);
+        }
+
+        function bookMoveToDestination() {
+            let x = 30;
+            let y = 65;
+            const dx_dest = 75;
+            const dy_dest = 35;
+
+            simInterval = setInterval(() => {
+                const dx = dx_dest - x;
+                const dy = dy_dest - y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist < 1) {
+                    clearInterval(simInterval);
+                    simState.ambPos = { x: dx_dest, y: dy_dest };
+                    simUpdateAmbPos();
+                    simAddLog(`🏥 Arrived at destination: <b>${bookState.drop}</b>. Handover complete. Booking closed. ✅`);
+                    
+                    // Hide markers
+                    document.getElementById('simNodePickup').classList.add('hidden');
+                    document.getElementById('simNodeDrop').classList.add('hidden');
+                } else {
+                    const spd = 0.5;
+                    x += (dx / dist) * spd;
+                    y += (dy / dist) * spd;
+                    simState.ambPos = { x, y };
+                    simUpdateAmbPos();
+                }
+            }, 30);
+        }
+
         function bookCompleteBooking() {
             bookGoToStep(4);
+            if (simInterval) clearInterval(simInterval);
+            bookStartAmbulanceAnimation();
         }
 
         function openBookingSection() {
@@ -1668,6 +1739,14 @@ type="submit">
               <!-- Dynamic Nodes -->
               <div id="simNodeIncident" class="hidden absolute w-4 h-4 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.6)] animate-pulse" style="left: 65%; top: 60%; transform: translate(-50%, -50%)">
                 <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap text-[10px] font-bold text-red-400 bg-slate-900/80 px-1.5 py-0.5 rounded border border-red-500/30">EMERGENCY</div>
+              </div>
+
+              <!-- Booking Simulation Map Nodes -->
+              <div id="simNodePickup" class="hidden absolute w-4 h-4 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] animate-pulse" style="left: 30%; top: 65%; transform: translate(-50%, -50%)">
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap text-[9px] font-bold text-blue-300 bg-slate-900/80 px-1.5 py-0.5 rounded border border-blue-500/30">PICKUP</div>
+              </div>
+              <div id="simNodeDrop" class="hidden absolute w-4 h-4 bg-emerald-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.6)] animate-pulse" style="left: 75%; top: 35%; transform: translate(-50%, -50%)">
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 whitespace-nowrap text-[9px] font-bold text-emerald-300 bg-slate-900/80 px-1.5 py-0.5 rounded border border-emerald-500/30">DESTINATION</div>
               </div>
 
               <div id="simNodeAmbulance" class="absolute w-4 h-4 bg-green-500 rounded-sm shadow-[0_0_15px_rgba(34,197,94,0.6)] transition-all duration-300" style="left: 10%; top: 20%; transform: translate(-50%, -50%)">
